@@ -25,7 +25,14 @@ describe('Bearer', function ( ) {
 
       server.auth.strategy('default', 'bearer-access-token', true, {
         validateFunc: function(decoded, request, callback) {
-          return callback(null, decoded.auth,  { token: decoded });
+          if (decoded.error) {
+            callback(decoded.error);
+          } else if (decoded.credentials === false) {
+            console.log("no credentials");
+            callback(null, decoded.auth);
+          } else {
+            callback(null, decoded.auth,  { token: decoded });
+          }
         },
         secret: GOODSECRET
       });
@@ -80,6 +87,48 @@ describe('Bearer', function ( ) {
 
     server.inject(request, function (res) {
       expect(res.statusCode).to.equal(400);
+      done();
+    });
+  });
+
+  it('returns an error when an incomplete token is sent', function (done) {
+    var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer" } };
+
+    server.inject(request, function (res) {
+      expect(res.statusCode).to.equal(400);
+      done();
+    });
+  });
+
+  it('returns an error when auth is invalid', function (done) {
+    var token = jwt.encode({ auth: false }, GOODSECRET);
+
+    var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
+
+    server.inject(request, function (res) {
+      expect(res.statusCode).to.equal(401);
+      done();
+    });
+  });
+
+  it('returns an error when an error is detected', function (done) {
+    var token = jwt.encode({ auth: false, error: 'some error' }, GOODSECRET);
+
+    var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
+
+    server.inject(request, function (res) {
+      expect(res.statusCode).to.equal(200);
+      done();
+    });
+  });
+
+  it('returns an error credentials are not returned', function (done) {
+    var token = jwt.encode({ auth: true, credentials: false }, GOODSECRET);
+
+    var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
+
+    server.inject(request, function (res) {
+      expect(res.statusCode).to.equal(500);
       done();
     });
   });
