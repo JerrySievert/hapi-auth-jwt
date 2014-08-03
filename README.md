@@ -1,6 +1,6 @@
 # Hapi JWT Bearer Token
 
-[![Build Status](https://travis-ci.org/jerrysievert/hapi-auth-jwt.svg?branch=master)](https://travis-ci.org/jerrysievert/hapi-auth-jwt)
+[![Build Status](https://travis-ci.org/JerrySievert/hapi-auth-jwt.svg?branch=master)](https://travis-ci.org/JerrySievert/hapi-auth-jwt)
 
 [Hapi](https://github.com/spumko/hapi) Bearer and JWT Authentication
 
