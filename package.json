@@ -1,5 +1,5 @@
 {
-  "name": "hapi-auth-jwt",
+  "name": "hapi-auth-jwt-request",
   "version": "1.0.0",
   "description": "Auth Module for Hapi using JSON Web Tokens",
   "main": "index.js",

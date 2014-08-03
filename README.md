@@ -2,7 +2,12 @@
 
 [![Build Status](https://travis-ci.org/JerrySievert/hapi-auth-jwt.svg?branch=master)](https://travis-ci.org/JerrySievert/hapi-auth-jwt)
 
-[Hapi](https://github.com/spumko/hapi) Bearer and JWT Authentication
+[Hapi](https://github.com/spumko/hapi) Bearer and JWT Authentication, with request
+
+```
+$ npm install --save hapi-auth-jwt-request
+```
+
 
 Bearer authentication requires validating a token passed in by either the bearer authorization header, or by an access_token query parameter. The `'bearer-access-token'` scheme takes the following options:
 
@@ -24,7 +29,7 @@ var server = Hapi.createServer('localhost', 8080, {
   cors: true
 });
 
-server.pack.register(require('hapi-auth-jwt'), function (err) {
+server.pack.register(require('hapi-auth-jwt-request'), function (err) {
   server.auth.strategy('simple', 'bearer-access-token', {
     validateFunc: function (token, request, callback) {
       if (token.username === "valid user"){
