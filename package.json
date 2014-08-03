@@ -21,6 +21,10 @@
   },
   "devDependencies": {
     "hapi": "^6.2.2",
-    "lab": "^3.2.3"
+    "lab": "^3.2.3",
+    "gulp-escomplex": "^0.1.2",
+    "gulp-escomplex-reporter-json": "^0.1.4",
+    "gulp": "^3.8.7",
+    "gulp-lab": "0.0.10"
   }
 }
