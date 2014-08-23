@@ -25,6 +25,10 @@ Bearer authentication requires validating a token passed in by either the bearer
 ```javascript
 var Hapi = require('hapi');
 
+var defaultHandler = function (request, reply) {
+    reply('success');
+};
+
 var server = Hapi.createServer('localhost', 8080, {
   cors: true
 });
@@ -41,10 +45,17 @@ server.pack.register(require('hapi-auth-jwt-request'), function (err) {
     secret: "mysecret"
   });
 
-  server.route({ method: 'GET', path: '/', config: { auth: 'simple' } });
+  server.route({ method: 'GET', path: '/', handler: defaultHandler, config: { auth: 'simple' } });
 
   server.start(function () {
     console.log('Server started at: ' + server.info.uri);
   });
 });
+```
+
+Example Usage:
+```sh
+curl -X GET -H "Authorization:Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIifQ.RMKj_W8OXSSXDyop-5t_dpL2qRTtk06gG2PZK4dHZbU" -H "Cache-Control:no-cache" http://localhost:8080
+
+curl -X GET -H "Cache-Control:no-cache" http://localhost:8080?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InZhbGlkIHVzZXIifQ.RMKj_W8OXSSXDyop-5t_dpL2qRTtk06gG2PZK4dHZbU
 ```
