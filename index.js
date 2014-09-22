@@ -1,6 +1,6 @@
 var Boom = require('boom');
 var Hoek = require('hoek');
-var jwt  = require('jwt-simple');
+var jwt  = require('jsonwebtoken');
 
 function register (plugin, options, next) {
   plugin.auth.scheme('bearer-access-token', function (server, options) {
@@ -36,7 +36,17 @@ function register (plugin, options, next) {
         }
 
         try {
-          decoded = jwt.decode(token, settings.secret);
+          jwt.verify(token, settings.secret, function (err, data) {
+            if ( err ) {
+              if ( err.name === 'TokenExpiredError' ) {
+                return reply(Boom.unauthorized('Bearer Token is expired', 'Bearer'));
+              } else {
+                return reply(Boom.badRequest('Unable to decode Bearer Token', 'Bearer'));
+              }
+            } else {
+              decoded = data;
+            }
+          });
         } catch (err) {
           return reply(Boom.badRequest('Unable to decode Bearer Token', 'Bearer'));
         }

@@ -1,6 +1,6 @@
 var Lab = require('lab');
 var Hapi = require('hapi');
-var jwt = require('jwt-simple');
+var jwt = require('jsonwebtoken');
 
 
 var expect = Lab.expect;
@@ -47,7 +47,7 @@ describe('Bearer', function ( ) {
   });
 
   it('returns a reply on successful auth with correct bearer token', function (done) {
-    var token = jwt.encode({ auth: true }, GOODSECRET);
+    var token = jwt.sign({ auth: true }, GOODSECRET);
 
     var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
 
@@ -59,7 +59,7 @@ describe('Bearer', function ( ) {
   });
 
   it('returns a reply on successful auth with access_token set', function (done) {
-    var token = jwt.encode({ auth: true }, GOODSECRET);
+    var token = jwt.sign({ auth: true }, GOODSECRET);
 
     var request = { method: 'POST', url: '/basic?access_token=' + token };
 
@@ -80,8 +80,8 @@ describe('Bearer', function ( ) {
     });
   });
 
-  it('returns an error when an incorrect secret is used to encode the token', function (done) {
-    var token = jwt.encode({ auth: true }, BADSECRET);
+  it('returns an error when an incorrect secret is used to sign the token', function (done) {
+    var token = jwt.sign({ auth: true }, BADSECRET);
 
     var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
 
@@ -101,7 +101,7 @@ describe('Bearer', function ( ) {
   });
 
   it('returns an error when auth is invalid', function (done) {
-    var token = jwt.encode({ auth: false }, GOODSECRET);
+    var token = jwt.sign({ auth: false }, GOODSECRET);
 
     var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
 
@@ -112,7 +112,7 @@ describe('Bearer', function ( ) {
   });
 
   it('returns an error when an error is detected', function (done) {
-    var token = jwt.encode({ auth: false, error: 'some error' }, GOODSECRET);
+    var token = jwt.sign({ auth: false, error: 'some error' }, GOODSECRET);
 
     var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
 
@@ -123,7 +123,7 @@ describe('Bearer', function ( ) {
   });
 
   it('returns an error credentials are not returned', function (done) {
-    var token = jwt.encode({ auth: true, credentials: false }, GOODSECRET);
+    var token = jwt.sign({ auth: true, credentials: false }, GOODSECRET);
 
     var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
 
@@ -133,4 +133,18 @@ describe('Bearer', function ( ) {
     });
   });
 
+  it('returns an error when token is expired', function (done) {
+    var token = jwt.sign({ auth: true, credentials: false }, GOODSECRET, { expiresInMinutes: .01 });
+
+    setTimeout( function () {
+      console.log('foo');
+      var request = { method: 'POST', url: '/basic', headers: { authorization: "Bearer " + token } };
+
+      server.inject(request, function (res) {
+        expect(res.statusCode).to.equal(401);
+        done();
+      });
+    }, 1000);
+
+  });
 });
