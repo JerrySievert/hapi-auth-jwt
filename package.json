@@ -17,7 +17,7 @@
   "dependencies": {
     "boom": "^2.4.2",
     "hoek": "^2.3.0",
-    "jwt-simple": "^0.2.0"
+    "jsonwebtoken": "^1.1.2"
   },
   "devDependencies": {
     "hapi": "^6.2.2",
